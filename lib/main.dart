@@ -1,18 +1,12 @@
-import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'apimanager.dart';
 import 'coin.dart';
-import 'package:http/http.dart' as http;
-String JsonContent = "";
 
 void main () async{
   runApp(MaterialApp(
     home: MyListScreen(),
   ));
-  print('Hello');
-  // produces a request object
-
 }
 
 List<Coin> coins = new List<Coin>();

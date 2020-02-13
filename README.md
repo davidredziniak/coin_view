@@ -1,16 +1,24 @@
-# flutter_crypto_viewer
+# Coin Viewer
 
-Coin Viewer API Test
+Coin Viewer is a simple Cryptocurrency viewing app utilizing the free CoinGecko API.
 
-## Getting Started
+This is a cool little first flutter app I started to make.
 
-This project is a starting point for a Flutter application.
+## Plans
 
-A few resources to get you started if this is your first Flutter project:
+I have plans to implement many features as I learn more about Dart and Flutter.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Some include:
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Auto update the Coin values (price, percentage change, rank)
+- A news tab that auto updates utilizing an API (maybe CryptoCompare.com)
+- Specific Coin information
+- More
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
