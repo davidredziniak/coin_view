@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'coin.dart';
 import 'api_manager.dart';
 import 'dart:convert';
+import 'package:google_fonts/google_fonts.dart';
 
-class FirstPage extends StatefulWidget {
+
+class CoinPage extends StatefulWidget {
   @override
-  _FirstPageState createState() => _FirstPageState();
+  _CoinPageState createState() => _CoinPageState();
 }
 
-class _FirstPageState extends State<FirstPage> {
+class _CoinPageState extends State<CoinPage> {
   Future<List<Coin>> _coins;
+  int _column = 0;
+  bool _sortAscending = true;
 
   @override
   void initState(){
@@ -49,9 +53,55 @@ class _FirstPageState extends State<FirstPage> {
     }
   }
 
-  SingleChildScrollView getCoinList(List<Coin> snapshot){
+
+  void toggle(int columnIndex){
+    setState(() {
+      _column = columnIndex;
+      _sortAscending = !_sortAscending;
+    });
+  }
+
+  Widget getCoinList(List<Coin> coinList){
+    if(coinList.isEmpty)
+      return new Container();
+
+
+    /*
+      Sorted
+     */
+    switch(_column){
+      case 0:
+        if(_sortAscending)
+          coinList.sort((a,b) => a.getRank().compareTo(b.getRank()));
+        else
+          coinList.sort((a,b) => b.getRank().compareTo(a.getRank()));
+        break;
+      case 1:
+        if(_sortAscending)
+          coinList.sort((a,b) => a.getName().compareTo(b.getName()));
+        else
+          coinList.sort((a,b) => b.getName().compareTo(a.getName()));
+        break;
+      case 2:
+        if(_sortAscending)
+          coinList.sort((a,b) => a.getPrice().compareTo(b.getPrice()));
+        else
+          coinList.sort((a,b) => b.getPrice().compareTo(a.getPrice()));
+        break;
+      case 3:
+        if(_sortAscending)
+          coinList.sort((a,b) => a.getPercentChange().compareTo(b.getPercentChange()));
+        else
+          coinList.sort((a,b) => b.getPercentChange().compareTo(a.getPercentChange()));
+        break;
+      default:
+        coinList.sort((a,b) => a.getRank().compareTo(b.getRank()));
+    }
+
     return SingleChildScrollView(
       child: DataTable(
+        sortAscending: _sortAscending,
+        sortColumnIndex: _column,
         dataRowHeight: 50,
         columns: [
           DataColumn(
@@ -62,6 +112,9 @@ class _FirstPageState extends State<FirstPage> {
                     color: Colors.white,
                   )),
             ),
+            onSort: (columnNumber, isAscending){
+              toggle(columnNumber);
+            },
             numeric: true,
           ),
           DataColumn(
@@ -71,6 +124,9 @@ class _FirstPageState extends State<FirstPage> {
                 )),
             numeric: false,
             tooltip: 'Coin name',
+            onSort: (columnNumber, isAscending){
+              toggle(columnNumber);
+            },
           ),
           DataColumn(
             label: Text('Price',
@@ -79,6 +135,9 @@ class _FirstPageState extends State<FirstPage> {
                 )),
             numeric: true,
             tooltip: 'Current price of coin',
+            onSort: (columnNumber, isAscending){
+              toggle(columnNumber);
+            },
           ),
           DataColumn(
             label: Text('%',
@@ -87,15 +146,17 @@ class _FirstPageState extends State<FirstPage> {
                 )),
             numeric: true,
             tooltip: 'Price change in 24 hours',
+            onSort: (columnNumber, isAscending){
+              toggle(columnNumber);
+            },
           ),
         ],
-        rows: snapshot.map((coinObj) => DataRow(
+        rows: coinList.map((coinObj) => DataRow(
+          selected: false,
           cells: [
             DataCell(
               Tab(icon: IconButton(
-                icon: new Image.asset(
-                  'assets/' + coinObj.getId() + '.png',
-                  height: 25,),
+                icon: new Image.network(coinObj.getImage(), height: 32),
                 onPressed: (){ //Test
                   print(coinObj.getId());
                 },
@@ -121,22 +182,24 @@ class _FirstPageState extends State<FirstPage> {
     );
   }
 
-  @override
   Widget build(context) {
     return Scaffold(
       appBar: AppBar(
         leading: (
             IconButton(
               icon: Icon(Icons.refresh),
-              tooltip: 'Refresh news',
+              tooltip: 'Refresh list',
               onPressed: (){
-                setState(() {
-                  _coins = getList();
-                });
+                _coins = getList();
               },
             )
         ),
-        title: Text('Coin View'),
+        title: Text('Coin View',
+        style: GoogleFonts.pTMono(
+            color: Colors.white,
+          fontSize: 23,
+          ),
+        ),
         centerTitle: true,
         actions: <Widget>[
           IconButton(
@@ -151,24 +214,24 @@ class _FirstPageState extends State<FirstPage> {
       ),
       backgroundColor: Colors.grey[900],
       body: new FutureBuilder<List<Coin>>(
-          future: _coins,
-          builder: (context, snapshot){
-            switch(snapshot.connectionState){
-              case ConnectionState.none:
-                return Container();
-              case ConnectionState.waiting:
-                return getCoinList([]);
-                break;
-              default:
-                while(snapshot.data.isEmpty){
-                  return Container(child: Text('Loading..'),);
-                }
-                if(snapshot.hasError)
-                  return Container(child: Text('ERROR FOUND'));
-                return getCoinList(snapshot.data);
-            }
-          },
-        ),
+        future: _coins,
+        builder: (context, snapshot){
+          switch(snapshot.connectionState){
+            case ConnectionState.none:
+              return Container();
+            case ConnectionState.waiting:
+              return getCoinList([]);
+              break;
+            default:
+              while(snapshot.data.isEmpty){
+                return Container(child: Text('Loading..'),);
+              }
+              if(snapshot.hasError)
+                return Container(child: Text('ERROR FOUND'));
+              return getCoinList(snapshot.data);
+          }
+        },
+      ),
     );
   }
 }

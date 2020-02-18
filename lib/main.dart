@@ -18,7 +18,7 @@ class MyListScreen extends StatefulWidget {
 
 class _MyListScreenState extends State {
   int _currentState = 0;
-  final bodyList = [FirstPage(), NewsPage()];
+  final bodyList = [CoinPage(), NewsPage()];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -34,7 +34,7 @@ class _MyListScreenState extends State {
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.graphic_eq),
             title: Text('Home'),
           ),
           BottomNavigationBarItem(

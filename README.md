@@ -10,9 +10,9 @@ I have plans to implement many features as I learn more about Dart and Flutter.
 
 Some include:
 
-- Auto update the Coin values (price, percentage change, rank)
-- A news tab that auto updates utilizing an API (maybe CryptoCompare.com)
-- Specific Coin information
+- Auto update the coin values (price, percentage change, rank)
+- A news tab that utilizes an API (maybe CryptoCompare.com)
+- Specific coin information
 - More
 
 ## Contributing

@@ -5,7 +5,7 @@ class ApiManager {
 
   //Using CoinGecko API, retrieve top 25 coins
   static Future getTop25() {
-    String url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=25&page=1&sparkline=false";
+    String url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=false";
     return http.get(url);
   }
 
@@ -15,7 +15,7 @@ class ApiManager {
   }
 
   static Future getNewsInfoPopular(){
-    String url = "https://min-api.cryptocompare.com/data/v2/news/?feeds=cryptocompare,cointelegraph,coindesk";
+    String url = "https://min-api.cryptocompare.com/data/v2/news/?lang=EN&sortOrder=popular";
     return http.get(url);
   }
 }
