@@ -1,5 +1,4 @@
 class Coin{
-
   String _name;
   double _price;
   int _rank;
@@ -16,7 +15,6 @@ class Coin{
     _imageUrl = imageUrl;
   }
 
-  //Getters
   int getRank() => _rank;
   String getName() => _name;
   double getPrice() => _price;

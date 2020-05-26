@@ -1,21 +1,21 @@
-# Coin Viewer
+## Coin Viewer
 
-Coin Viewer is a simple Cryptocurrency viewing app utilizing the free CoinGecko API.
+Coin Viewer is a simple Cryptocurrency data app.
 
-This is a cool little first flutter app I started to make.
+## APIs
+CoinGecko provides prices
+CryptoCompare provides news
 
 ## Plans
+I have plans to implement features as I progress in Dart and Flutter
 
-I have plans to implement many features as I learn more about Dart and Flutter.
-
-Some include:
-
+- Allow users to keep track of crypto purchases
 - Auto update the coin values (price, percentage change, rank)
-- A news tab that utilizes an API (maybe CryptoCompare.com)
-- Specific coin information
+- A news tab that utilizes an API (maybe CryptoCompare.com) - DONE
+- Specific coin information (Graphs, historical data)
 - More
 
-## Contributing
+## Contributions
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.

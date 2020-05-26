@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'coin.dart';
-import 'api_manager.dart';
+import 'Objects/coin.dart';
+import 'API/apiManager.dart';
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
-
 
 class CoinPage extends StatefulWidget {
   @override
@@ -11,91 +10,89 @@ class CoinPage extends StatefulWidget {
 }
 
 class _CoinPageState extends State<CoinPage> {
-  Future<List<Coin>> _coins;
+  Future<List<Coin>> _coinsList;
   int _column = 0;
   bool _sortAscending = true;
+  int _columnSelected = 0;
 
   @override
   void initState(){
-    _coins = getList();
+    _coinsList = getCoinsList();
     super.initState();
   }
 
-  Future<List<Coin>> getList() async {
-    List<Coin> tempList = new List<Coin>();
+  Future<List<Coin>> getCoinsList() async {
+    List<Coin> list = new List<Coin>();
     ApiManager.getTop25().then((response) {
       setState(() {
-        var parsedList = json.decode(response.body);
-        var ll = (parsedList as List).map((data) => new Coin.fromJson(data)).toList();
-        for(Coin c in ll){
-          tempList.add(c);
+        var jsonData = json.decode(response.body);
+        var parsedCoins = (jsonData as List).map((data) => new Coin.fromJson(data)).toList();
+        for(Coin c in parsedCoins){
+          list.add(c);
         }
       });
     });
-    return tempList;
+    return list;
   }
 
+  /// Retrieve text color based on percentage increase or decrease
+  /// number < 0 -- Red
+  /// number > 0 -- Green
+  /// number = 0 -- White
   TextStyle getTextStyle(double number){
-    if(number < 0){
-      return TextStyle(
-        color: Colors.red,
-      );
-    }
-    else if(number == 0){
-      return TextStyle(
-        color: Colors.black,
-      );
-    }
-    else{
-      return TextStyle(
-        color: Colors.green[600],
-      );
-    }
+    Color color;
+    color = number > 0 ? Colors.green[600] : number < 0 ? Colors.red : Colors.white;
+    return TextStyle(
+      color: color,
+    );
   }
 
-
+  /// Toggle the column rows, ascending or descending
   void toggle(int columnIndex){
     setState(() {
+      _sortAscending = _columnSelected != columnIndex ? true : !_sortAscending;
       _column = columnIndex;
-      _sortAscending = !_sortAscending;
+      _columnSelected = columnIndex;
     });
   }
 
-  Widget getCoinList(List<Coin> coinList){
-    if(coinList.isEmpty)
+  String getPercentageString(Coin coinObj){
+    if(coinObj.getPercentChange() > 0)
+      return '+' + coinObj.getPercentChange().toStringAsFixed(2);
+    return coinObj.getPercentChange().toStringAsFixed(2);
+  }
+
+  Widget getSortedList(List<Coin> coins){
+    if(coins.isEmpty)
       return new Container();
 
-
-    /*
-      Sorted
-     */
     switch(_column){
-      case 0:
+      case 0: //Rank
         if(_sortAscending)
-          coinList.sort((a,b) => a.getRank().compareTo(b.getRank()));
+          coins.sort((a,b) => a.getRank().compareTo(b.getRank()));
         else
-          coinList.sort((a,b) => b.getRank().compareTo(a.getRank()));
+          coins.sort((a,b) => b.getRank().compareTo(a.getRank()));
         break;
-      case 1:
+      case 1: //Name
         if(_sortAscending)
-          coinList.sort((a,b) => a.getName().compareTo(b.getName()));
+          coins.sort((a,b) => a.getName().compareTo(b.getName()));
         else
-          coinList.sort((a,b) => b.getName().compareTo(a.getName()));
+          coins.sort((a,b) => b.getName().compareTo(a.getName()));
         break;
-      case 2:
+      case 2: //Price
         if(_sortAscending)
-          coinList.sort((a,b) => a.getPrice().compareTo(b.getPrice()));
+          coins.sort((a,b) => a.getPrice().compareTo(b.getPrice()));
         else
-          coinList.sort((a,b) => b.getPrice().compareTo(a.getPrice()));
+          coins.sort((a,b) => b.getPrice().compareTo(a.getPrice()));
         break;
-      case 3:
+      case 3: //Percent Change
         if(_sortAscending)
-          coinList.sort((a,b) => a.getPercentChange().compareTo(b.getPercentChange()));
+          coins.sort((a,b) => a.getPercentChange().compareTo(b.getPercentChange()));
         else
-          coinList.sort((a,b) => b.getPercentChange().compareTo(a.getPercentChange()));
+          coins.sort((a,b) => b.getPercentChange().compareTo(a.getPercentChange()));
         break;
       default:
-        coinList.sort((a,b) => a.getRank().compareTo(b.getRank()));
+        coins.sort((a,b) => b.getRank().compareTo(a.getRank()));
     }
 
     return SingleChildScrollView(
@@ -105,17 +102,10 @@ class _CoinPageState extends State<CoinPage> {
         dataRowHeight: 50,
         columns: [
           DataColumn(
-            label: Container(
-              child: Text('',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    color: Colors.white,
-                  )),
-            ),
-            onSort: (columnNumber, isAscending){
+            label: Container(),
+            onSort: (columnNumber, _sortAscending){
               toggle(columnNumber);
             },
-            numeric: true,
           ),
           DataColumn(
             label: Text('Name',
@@ -124,7 +114,7 @@ class _CoinPageState extends State<CoinPage> {
                 )),
             numeric: false,
             tooltip: 'Coin name',
-            onSort: (columnNumber, isAscending){
+            onSort: (columnNumber, _sortAscending){
               toggle(columnNumber);
             },
           ),
@@ -135,7 +125,7 @@ class _CoinPageState extends State<CoinPage> {
                 )),
             numeric: true,
             tooltip: 'Current price of coin',
-            onSort: (columnNumber, isAscending){
+            onSort: (columnNumber, _sortAscending){
               toggle(columnNumber);
             },
           ),
@@ -146,12 +136,12 @@ class _CoinPageState extends State<CoinPage> {
                 )),
             numeric: true,
             tooltip: 'Price change in 24 hours',
-            onSort: (columnNumber, isAscending){
+            onSort: (columnNumber, _sortAscending){
               toggle(columnNumber);
             },
           ),
         ],
-        rows: coinList.map((coinObj) => DataRow(
+        rows: coins.map((coinObj) => DataRow(
           selected: false,
           cells: [
             DataCell(
@@ -163,15 +153,17 @@ class _CoinPageState extends State<CoinPage> {
               )),
             ),
             DataCell(
-              Text(coinObj.getName(), style: TextStyle(color: Colors.white),),
+                Text(coinObj.getName(), style: TextStyle(color: Colors.white),
+              ),
             ),
             DataCell(
-              Text(coinObj.getPrice().toStringAsFixed(2), style: TextStyle(color: Colors.white),),
+                Text(coinObj.getPrice().toStringAsFixed(2), style: TextStyle(color: Colors.white),
+              ),
             ),
             DataCell(
               Container(
                 child: Text(
-                  coinObj.getPercentChange().toStringAsFixed(2),
+                  getPercentageString(coinObj),
                   style: getTextStyle(coinObj.getPercentChange()),
                 ),
               ),
@@ -190,7 +182,7 @@ class _CoinPageState extends State<CoinPage> {
               icon: Icon(Icons.refresh),
               tooltip: 'Refresh list',
               onPressed: (){
-                _coins = getList();
+                _coinsList = getCoinsList();
               },
             )
         ),
@@ -214,21 +206,21 @@ class _CoinPageState extends State<CoinPage> {
       ),
       backgroundColor: Colors.grey[900],
       body: new FutureBuilder<List<Coin>>(
-        future: _coins,
-        builder: (context, snapshot){
-          switch(snapshot.connectionState){
+        future: _coinsList,
+        builder: (context, coinsRetrieval){
+          switch(coinsRetrieval.connectionState){
             case ConnectionState.none:
               return Container();
             case ConnectionState.waiting:
-              return getCoinList([]);
+              return getSortedList([]);
               break;
             default:
-              while(snapshot.data.isEmpty){
+              while(coinsRetrieval.data.isEmpty){
                 return Container(child: Text('Loading..'),);
               }
-              if(snapshot.hasError)
+              if(coinsRetrieval.hasError)
                 return Container(child: Text('ERROR FOUND'));
-              return getCoinList(snapshot.data);
+              return getSortedList(coinsRetrieval.data);
           }
         },
       ),

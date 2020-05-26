@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import 'coin_page.dart';
-import 'news_page.dart';
+import 'coinPage.dart';
+import 'newsPage.dart';
 
-void main () async{
-  runApp(MaterialApp(
-    home: MyListScreen(),
-  ));
+void main() async{
+  runApp(
+    MaterialApp(
+      home: MyListScreen(),
+    )
+  );
 }
-
 
 class MyListScreen extends StatefulWidget {
   @override
   createState() => _MyListScreenState();
 }
-
-
 
 class _MyListScreenState extends State {
   int _currentState = 0;
@@ -25,7 +24,6 @@ class _MyListScreenState extends State {
       _currentState = index;
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
